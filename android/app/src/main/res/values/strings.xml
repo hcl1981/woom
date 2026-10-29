@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Default (English). Used for every system language without its own values-xx folder. -->
+<resources>
+    <string name="app_name" translatable="false">Woom</string>
+
+    <!-- Main screen -->
+    <string name="settings">Settings</string>
+    <string name="no_devices_hint">No devices yet. Tap the gear icon at the top right to add your WiiM devices.</string>
+    <string name="radio_stations">Radio stations</string>
+    <string name="add_station">Add station</string>
+    <string name="volume_and_inputs">Volume &amp; inputs</string>
+    <string name="collapse">Collapse</string>
+    <string name="expand">Expand</string>
+    <string name="station_settings">Station settings</string>
+    <string name="device_settings">Device settings</string>
+    <string name="offline">offline</string>
+    <string name="online">online</string>
+
+    <!-- Device sheet -->
+    <string name="abbreviation">Abbreviation</string>
+    <string name="name">Name</string>
+    <string name="shown_inputs">Shown inputs</string>
+    <string name="done">Done</string>
+
+    <!-- Station screen -->
+    <string name="new_station">New station</string>
+    <string name="edit_station">Edit station</string>
+    <string name="back">Back</string>
+    <string name="move_up">Move up</string>
+    <string name="move_down">Move down</string>
+    <string name="delete">Delete</string>
+    <string name="cancel">Cancel</string>
+    <string name="save">Save</string>
+    <string name="stream_url">Stream URL</string>
+    <string name="image_url">Image URL (optional)</string>
+    <string name="station_buttons">Device buttons in this bar (max. %1$d)</string>
+    <string name="add_devices_first">Add devices in the settings first.</string>
+    <string name="delete_station_question">Delete “%1$s”?</string>
+    <string name="favorite_title">Save as preset on devices</string>
+    <string name="preset_slot">Preset slot</string>
+    <string name="loading">loading …</string>
+    <string name="slot_taken">Slot %1$d holds “%2$s” – will be replaced</string>
+    <string name="slot_free">Slot %1$d is free</string>
+    <string name="transfer">Transfer</string>
+    <string name="search_station">Search station</string>
+    <string name="search_hint">Station name, e.g. BBC Radio 2</string>
+    <string name="search_failed">Search failed – no internet connection?</string>
+    <string name="no_results">No stations found</string>
+    <string name="search_source">Station directory: radio-browser.info</string>
+    <string name="or_enter_manually">Enter manually</string>
+
+    <!-- Settings screen -->
+    <string name="my_devices">My devices</string>
+    <string name="no_devices_added">No devices added yet.</string>
+    <string name="found_in_wifi">Found on Wi‑Fi</string>
+    <string name="search_again">Search again</string>
+    <string name="searching_hint">Searching … (the phone must be on the same Wi‑Fi as the devices)</string>
+    <string name="add">Add</string>
+    <string name="add_by_ip">Add device by IP address</string>
+    <string name="ip_example">e.g. 192.168.0.4</string>
+    <string name="remove_device_question">Remove %1$s?</string>
+    <string name="remove_device_text">The device disappears from all station bars and from volume &amp; inputs.</string>
+    <string name="remove">Remove</string>
+
+    <!-- Messages -->
+    <string name="msg_no_device_at">No WiiM device reachable at %1$s</string>
+    <string name="msg_already_added">%1$s is already added</string>
+    <string name="msg_added">%1$s added</string>
+    <string name="msg_unreachable">%1$s: not reachable</string>
+    <string name="msg_error">%1$s: %2$s</string>
+    <string name="msg_volume_failed">%1$s: volume not set</string>
+    <string name="msg_preset_saved">%1$s: saved as preset %2$d</string>
+    <string name="msg_preset_failed">%1$s: error – %2$s</string>
+
+    <!-- Inputs -->
+    <string name="input_line_in">Line in</string>
+    <string name="input_line_in2">Line in 2</string>
+    <string name="input_bluetooth">Bluetooth</string>
+    <string name="input_usb">USB</string>
+    <string name="input_usb_audio">USB audio</string>
+    <string name="input_optical">Optical</string>
+    <string name="input_optical2">Optical 2</string>
+    <string name="input_coax">Coaxial</string>
+    <string name="input_coax2">Coaxial 2</string>
+    <string name="input_rca">RCA</string>
+    <string name="input_fm">FM</string>
+    <string name="input_dab">DAB</string>
+    <string name="input_xlr">XLR</string>
+    <string name="input_hdmi">HDMI</string>
+    <string name="input_arc">HDMI ARC</string>
+    <string name="input_cd">CD</string>
+    <string name="input_sd">SD card</string>
+    <string name="input_phono">Phono</string>
+    <string name="input_aux">AUX</string>
+    <string name="mute">Mute</string>
+    <string name="unmute">Unmute</string>
+</resources>

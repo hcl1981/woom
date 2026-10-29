@@ -1,0 +1,15 @@
+# Build output
+build/
+.gradle/
+.kotlin/
+*.apk
+*.aab
+*.deb
+*.zip
+*.xapk
+
+# Local settings
+local.properties
+.idea/
+*.iml
+.DS_Store
