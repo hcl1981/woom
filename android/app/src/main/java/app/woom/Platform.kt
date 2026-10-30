@@ -41,4 +41,7 @@ fun Msg.text(): String = when (this) {
     is Msg.VolumeFailed -> stringResource(R.string.msg_volume_failed, device)
     is Msg.PresetSaved -> stringResource(R.string.msg_preset_saved, device, slot)
     is Msg.PresetFailed -> stringResource(R.string.msg_preset_failed, device, reason)
+    Msg.NoBluetooth -> stringResource(R.string.msg_no_bluetooth)
+    is Msg.PairInSettings -> stringResource(R.string.msg_pair_in_settings, device)
+    is Msg.BluetoothFailed -> stringResource(R.string.msg_bluetooth_failed, device)
 }

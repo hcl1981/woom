@@ -46,9 +46,9 @@ fun Msg.text(): String = when (this) {
     is Msg.VolumeFailed -> stringResource(Res.string.msg_volume_failed, device)
     is Msg.PresetSaved -> stringResource(Res.string.msg_preset_saved, device, slot)
     is Msg.PresetFailed -> stringResource(Res.string.msg_preset_failed, device, reason)
-    NoBluetooth -> stringResource(Res.string.msg_no_bluetooth)
-    is PairInSettings -> stringResource(Res.string.msg_pair_in_settings, device)
-    is BluetoothFailed -> stringResource(Res.string.msg_bluetooth_failed, device)
+    Msg.NoBluetooth -> stringResource(Res.string.msg_no_bluetooth)
+    is Msg.PairInSettings -> stringResource(Res.string.msg_pair_in_settings, device)
+    is Msg.BluetoothFailed -> stringResource(Res.string.msg_bluetooth_failed, device)
 }
 
 val isWindows = System.getProperty("os.name").startsWith("Windows")

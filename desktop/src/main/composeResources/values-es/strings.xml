@@ -2,7 +2,6 @@
 <resources>
     <string name="settings">Ajustes</string>
     <string name="no_devices_hint">Aún no hay dispositivos. Haz clic en el engranaje arriba a la derecha para añadir tus dispositivos WiiM.</string>
-    <string name="radio_stations">Emisoras de radio</string>
     <string name="add_station">Añadir emisora</string>
     <string name="volume_and_inputs">Volumen y entradas</string>
     <string name="collapse">Contraer</string>
@@ -85,8 +84,9 @@
     <string name="tray_quit">Salir</string>
     <string name="autostart">Iniciar Woom al iniciar sesión</string>
     <string name="station_list">Lista de emisoras</string>
-    <string name="computer_audio">Ordenador</string>
-    <string name="msg_no_bluetooth">Este ordenador no tiene Bluetooth</string>
+    <string name="device_audio">Audio del dispositivo</string>
+    <string name="stations">Emisoras</string>
+    <string name="msg_no_bluetooth">Bluetooth no disponible</string>
     <string name="msg_pair_in_settings">Añade «%1$s» en la configuración de Bluetooth; el sonido cambiará solo</string>
     <string name="msg_bluetooth_failed">%1$s: falló la conexión Bluetooth</string>
     <string name="sources">Fuentes</string>

@@ -2,7 +2,6 @@
 <resources>
     <string name="settings">Einstellungen</string>
     <string name="no_devices_hint">Noch keine Geräte. Klicke oben rechts auf das Zahnrad, um deine WiiM-Geräte hinzuzufügen.</string>
-    <string name="radio_stations">Radiosender</string>
     <string name="add_station">Sender hinzufügen</string>
     <string name="volume_and_inputs">Lautstärke &amp; Eingänge</string>
     <string name="collapse">Einklappen</string>
@@ -85,8 +84,9 @@
     <string name="tray_quit">Beenden</string>
     <string name="autostart">Woom bei der Anmeldung starten</string>
     <string name="station_list">Senderliste</string>
-    <string name="computer_audio">Computer</string>
-    <string name="msg_no_bluetooth">Dieser Computer hat kein Bluetooth</string>
+    <string name="device_audio">Geräteaudio</string>
+    <string name="stations">Sender</string>
+    <string name="msg_no_bluetooth">Kein Bluetooth verfügbar</string>
     <string name="msg_pair_in_settings">In den Bluetooth-Einstellungen „%1$s“ hinzufügen – der Ton wechselt dann von selbst</string>
     <string name="msg_bluetooth_failed">%1$s: Bluetooth-Verbindung fehlgeschlagen</string>
     <string name="sources">Quellen</string>

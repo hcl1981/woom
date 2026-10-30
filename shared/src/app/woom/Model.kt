@@ -34,6 +34,8 @@ data class Station(
 data class AppData(
     val devices: List<Device> = emptyList(),
     val stations: List<Station> = emptyList(),
+    /** Show the bar that plays the sound of this phone or computer on a WiiM. */
+    val deviceAudio: Boolean = true,
 )
 
 const val MAX_STATION_DEVICES = 5

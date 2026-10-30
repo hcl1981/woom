@@ -2,7 +2,6 @@
 <resources>
     <string name="settings">Instellingen</string>
     <string name="no_devices_hint">Nog geen apparaten. Klik rechtsboven op het tandwiel om je WiiM-apparaten toe te voegen.</string>
-    <string name="radio_stations">Radiozenders</string>
     <string name="add_station">Zender toevoegen</string>
     <string name="volume_and_inputs">Volume en ingangen</string>
     <string name="collapse">Inklappen</string>
@@ -85,8 +84,9 @@
     <string name="tray_quit">Afsluiten</string>
     <string name="autostart">Woom starten bij aanmelden</string>
     <string name="station_list">Zenderlijst</string>
-    <string name="computer_audio">Computer</string>
-    <string name="msg_no_bluetooth">Deze computer heeft geen Bluetooth</string>
+    <string name="device_audio">Apparaataudio</string>
+    <string name="stations">Zenders</string>
+    <string name="msg_no_bluetooth">Bluetooth niet beschikbaar</string>
     <string name="msg_pair_in_settings">Voeg „%1$s” toe in de Bluetooth-instellingen – het geluid schakelt dan vanzelf over</string>
     <string name="msg_bluetooth_failed">%1$s: Bluetooth-verbinding mislukt</string>
     <string name="sources">Bronnen</string>

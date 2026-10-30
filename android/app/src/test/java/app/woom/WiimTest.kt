@@ -1,5 +1,6 @@
 package app.woom
 
+import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Test
@@ -120,5 +121,31 @@ class WiimTest {
         assertEquals(BtStatus(true, "ThinkPad-T14-Gen-4"), on)
         val off = Wiim.parseBtStatus("""{ "status": 6, "server": 68, "a2dp_sink": { "pairing": 1, "link_state": "disconnected", "name": "" } }""")
         assertEquals(BtStatus(false, ""), off)
+    }
+
+    @Test
+    fun parsesBluetoothHistory() {
+        val raw = """{ "num": 2, "scan_status": 0, "list": [ { "name": "Phone", "ad": "02:00:00:00:0a:f0", "ct": 0, "role": "Audio Source", "rssi": 0 }, { "name": "Laptop", "ad": "02:00:00:00:09:30", "ct": 0, "role": "Audio Source", "rssi": 0 } ] }"""
+        assertEquals(listOf(BtSource("Phone", "02:00:00:00:0A:F0"), BtSource("Laptop", "02:00:00:00:09:30")), Wiim.parseBtHistory(raw))
+    }
+
+    private fun device(id: String) = Device(id, id, "ip-$id", id)
+    private fun info(group: Int, master: String = "") = DeviceInfo("", "", "", emptyList(), 6, group, master)
+
+    @Test
+    fun aFollowerStandsForItsLeader() = runBlocking {
+        val (az, sz, ku) = listOf(device("AZ"), device("SZ"), device("KU"))
+        val states = mapOf("AZ" to info(1, "SZ"), "SZ" to info(0))
+        // The bug: KU saw follower AZ first and started its own, unsynchronized stream.
+        assertEquals(sz, groupLeader(listOf(az, sz), listOf(az, sz, ku), "KU") { states[it.uuid] })
+    }
+
+    @Test
+    fun noLeaderWithoutAnotherDevice() = runBlocking {
+        val (az, sz) = listOf(device("AZ"), device("SZ"))
+        assertEquals(null, groupLeader(emptyList(), listOf(az, sz), "SZ") { info(0) })
+        // AZ follows the tapped device itself, which can't join itself.
+        assertEquals(null, groupLeader(listOf(az), listOf(az, sz), "SZ") { info(1, "SZ") })
+        assertEquals(null, groupLeader(listOf(az), listOf(az, sz), "SZ") { null })
     }
 }

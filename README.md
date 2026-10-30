@@ -19,8 +19,8 @@ on several devices, and switch volume and inputs. No account, no cloud, everythi
 - **Presets:** save a station to the device's preset buttons.
 - **Volume, mute and inputs** (line-in, optical, Bluetooth, HDMI, phono, …) per device.
 - **PC version as tray icon:** a small window next to the clock, no taskbar entry, optional start at login.
-- **Computer sound to a WiiM** (PC version): plays the computer's audio over Bluetooth on one WiiM.
-  Low delay, and video players compensate for it, so films stay in sync.
+- **Device audio:** plays the sound of your phone or computer over Bluetooth on one WiiM. Low delay, and video
+  players compensate for it, so films stay in sync. Can be switched off in the settings.
 - Devices are found automatically on the local network (or added by IP address).
 - 10 languages: English, German, French, Spanish, Italian, Dutch, Polish, Portuguese, Japanese, Chinese (simplified).
 
@@ -39,7 +39,7 @@ See [Releases](../../releases):
 Notes:
 - The tray icon on Linux uses StatusNotifier (Cinnamon, KDE, XFCE, MATE; GNOME needs the AppIndicator extension).
 - Windows SmartScreen warns on first start because the program is not signed.
-- The Windows build runs on Windows 10/11 (start, device discovery, settings and computer audio).
+- The Windows build runs on Windows 10/11 (start, device discovery, settings and device audio).
 
 ## Building
 

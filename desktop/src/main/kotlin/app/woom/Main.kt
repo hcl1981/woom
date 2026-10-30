@@ -51,7 +51,7 @@ import kotlin.system.exitProcess
 private const val WINDOW_WIDTH = 400
 
 /** Height of the settings and station editor; the main list sizes the window to its content. */
-private const val FORM_HEIGHT = 640
+private const val FORM_HEIGHT = 700
 private const val MIN_HEIGHT = 200
 
 /** Port on localhost that a second start uses to bring up the window of the running instance. */
@@ -87,8 +87,7 @@ fun main(args: Array<String>) {
     // program, one-time unpacking of the graphics library). The splash appears at once, long before
     // Compose is ready, and is closed as soon as the real window shows (see below).
     if (!hidden) Splash.show()
-    val vm = WoomViewModel(Store(File(configDir(), "woom.json")), NetworkScanner())
-    val computer = ComputerAudio(vm)
+    val vm = WoomViewModel(Store(File(configDir(), "woom.json")), NetworkScanner(), DesktopBluetooth())
     if (!hidden) Popup.show()
     // Keeps the start-at-login entry pointing at this program, e.g. after an update renamed or moved it.
     if (Autostart.available && Autostart.isEnabled()) Autostart.set(true)
@@ -177,7 +176,7 @@ fun main(args: Array<String>) {
             }
             WoomTheme {
                 Surface(border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant)) {
-                    App(vm, computer, screen, onScreen = { screen = it })
+                    App(vm, screen, onScreen = { screen = it })
                 }
             }
         }
@@ -185,7 +184,7 @@ fun main(args: Array<String>) {
 }
 
 @Composable
-private fun App(vm: WoomViewModel, computer: ComputerAudio, screen: String?, onScreen: (String?) -> Unit) {
+private fun App(vm: WoomViewModel, screen: String?, onScreen: (String?) -> Unit) {
     // null = main screen, SETTINGS = device settings, otherwise the id of the station being edited.
     var draft by remember { mutableStateOf<String?>(null) }
     when (screen) {
@@ -195,7 +194,6 @@ private fun App(vm: WoomViewModel, computer: ComputerAudio, screen: String?, onS
             onEditStation = { onScreen(it) },
             onAddStation = { val st = vm.newStation(); draft = st.id; onScreen(st.id) },
             onContentHeight = { Popup.contentHeight = it },
-            computer = computer,
         )
         SETTINGS -> SettingsScreen(vm, onBack = { onScreen(null) })
         else -> key(screen) {

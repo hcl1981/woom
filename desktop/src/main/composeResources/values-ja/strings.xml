@@ -2,7 +2,6 @@
 <resources>
     <string name="settings">設定</string>
     <string name="no_devices_hint">デバイスがまだありません。右上の歯車をクリックして WiiM デバイスを追加してください。</string>
-    <string name="radio_stations">ラジオ局</string>
     <string name="add_station">局を追加</string>
     <string name="volume_and_inputs">音量と入力</string>
     <string name="collapse">折りたたむ</string>
@@ -85,8 +84,9 @@
     <string name="tray_quit">終了</string>
     <string name="autostart">ログイン時に Woom を起動</string>
     <string name="station_list">局リスト</string>
-    <string name="computer_audio">コンピューター</string>
-    <string name="msg_no_bluetooth">このコンピューターには Bluetooth がありません</string>
+    <string name="device_audio">デバイスオーディオ</string>
+    <string name="stations">ラジオ局</string>
+    <string name="msg_no_bluetooth">Bluetooth を利用できません</string>
     <string name="msg_pair_in_settings">Bluetooth 設定で「%1$s」を追加してください。音声は自動的に切り替わります</string>
     <string name="msg_bluetooth_failed">%1$s: Bluetooth 接続に失敗しました</string>
     <string name="sources">ソース</string>

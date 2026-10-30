@@ -7,7 +7,7 @@ The same remote as the Android app, as a small window at the tray icon (notifica
 - **Click the tray icon** to open the window next to the icon; another click, or a click elsewhere, closes it.
   Esc goes back one level or closes the window. The window does not appear as a separate program in the taskbar.
 - **Right-click the icon:** "Open Woom" and "Quit".
-- **Computer** (first bar): plays the PC's sound on a WiiM over Bluetooth – low latency, video players
+- **Device audio** (first bar, can be switched off in the settings): plays the PC's sound on a WiiM over Bluetooth – low latency, video players
   compensate for it automatically (films stay in sync). Click a device: the WiiM switches to its
   Bluetooth input and connects to the PC, and the system reroutes the sound (Linux about 2.5–5 s).
   Click again to disconnect. If the WiiM switches to another source (station, remote, WiiM app), Woom
@@ -51,7 +51,7 @@ Protocol and control logic come from `../shared/src` (shared with the Android ap
 ## Test status (2026-10-30)
 
 - Linux (Cinnamon/X11): tray icon, window at the icon, no taskbar entry, playing stations, logos – checked by the user / locally.
-- Computer audio (Linux, Ultra): pairing, connecting, disconnecting and automatic disconnect on source change checked
+- Device audio (Linux, Ultra): pairing, connecting, disconnecting and automatic disconnect on source change checked
   (developer build). Listening test / lip sync by the user still pending.
-- Windows 10/11: start, device discovery, settings persistence, first-time Bluetooth pairing for computer audio, and the
+- Windows 10/11: start, device discovery, settings persistence, first-time Bluetooth pairing for device audio, and the
   autostart installer checked by the user. (Earlier versions had only been tested under Wine.)

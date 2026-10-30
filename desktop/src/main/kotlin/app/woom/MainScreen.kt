@@ -85,7 +85,6 @@ fun MainScreen(
     onSettings: () -> Unit,
     onEditStation: (String) -> Unit,
     onAddStation: () -> Unit,
-    computer: ComputerAudio,
     onContentHeight: (Int?) -> Unit,
 ) {
     val snackbar = remember { SnackbarHostState() }
@@ -137,10 +136,12 @@ fun MainScreen(
                     Hint(stringResource(Res.string.no_devices_hint))
                 }
             }
-            // The computer's sound and the radio stations are both sources for the devices.
-            val hasComputer = computer.devices().isNotEmpty()
-            if (hasComputer || vm.data.stations.isNotEmpty()) item { SectionTitle(stringResource(Res.string.sources)) }
-            if (hasComputer) item(key = "computer") { ComputerBar(vm, computer) }
+            // With device audio the list holds different kinds of sources, otherwise only stations.
+            val hasDeviceAudio = vm.deviceAudio.devices().isNotEmpty()
+            if (hasDeviceAudio || vm.data.stations.isNotEmpty()) {
+                item { SectionTitle(stringResource(if (hasDeviceAudio) Res.string.sources else Res.string.stations)) }
+            }
+            if (hasDeviceAudio) item(key = "device-audio") { DeviceAudioBar(vm) }
             items(vm.data.stations, key = { it.id }) { station ->
                 // Drag a station bar with the mouse to sort the list.
                 ReorderableItem(reorderState, key = station.id) { dragging ->
@@ -163,14 +164,15 @@ fun MainScreen(
             if (vm.data.devices.isNotEmpty()) {
                 item {
                     Row(
-                        Modifier.fillMaxWidth().clip(RoundedCornerShape(8.dp)).clickable { devicesExpanded = !devicesExpanded },
+                        Modifier.fillMaxWidth().clip(RoundedCornerShape(8.dp)).clickable { devicesExpanded = !devicesExpanded }
+                            .padding(vertical = 6.dp),
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
-                        SectionTitle(stringResource(Res.string.volume_and_inputs))
+                        SectionTitle(stringResource(Res.string.volume_and_inputs), Modifier.padding(start = 4.dp))
                         Icon(
                             if (devicesExpanded) Icons.Filled.ExpandLess else Icons.Filled.ExpandMore,
                             if (devicesExpanded) stringResource(Res.string.collapse) else stringResource(Res.string.expand),
-                            Modifier.padding(start = 4.dp, top = 8.dp),
+                            Modifier.padding(start = 4.dp),
                             tint = MaterialTheme.colorScheme.primary,
                         )
                     }
@@ -371,12 +373,12 @@ fun StationImage(url: String, sizeDp: Int) {
 }
 
 @Composable
-fun SectionTitle(text: String) {
+fun SectionTitle(text: String, modifier: Modifier = Modifier.padding(start = 4.dp, top = 8.dp)) {
     Text(
         text,
         style = MaterialTheme.typography.labelLarge,
         color = MaterialTheme.colorScheme.primary,
-        modifier = Modifier.padding(start = 4.dp, top = 8.dp),
+        modifier = modifier,
     )
 }
 

@@ -120,6 +120,16 @@ fun SettingsScreen(vm: WoomViewModel, onBack: () -> Unit) {
                 }
             }
 
+            item {
+                Row(
+                    Modifier.fillMaxWidth().padding(top = 12.dp, start = 4.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Text(stringResource(Res.string.device_audio), Modifier.weight(1f))
+                    Switch(checked = vm.data.deviceAudio, onCheckedChange = vm::setDeviceAudio)
+                }
+            }
+
             if (Autostart.available) {
                 item {
                     var autostart by remember { mutableStateOf(Autostart.isEnabled()) }

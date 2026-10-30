@@ -2,7 +2,6 @@
 <resources>
     <string name="settings">设置</string>
     <string name="no_devices_hint">还没有设备。点击右上角的齿轮添加你的 WiiM 设备。</string>
-    <string name="radio_stations">电台</string>
     <string name="add_station">添加电台</string>
     <string name="volume_and_inputs">音量与输入</string>
     <string name="collapse">收起</string>
@@ -85,8 +84,9 @@
     <string name="tray_quit">退出</string>
     <string name="autostart">登录时启动 Woom</string>
     <string name="station_list">电台列表</string>
-    <string name="computer_audio">电脑</string>
-    <string name="msg_no_bluetooth">此电脑没有蓝牙</string>
+    <string name="device_audio">设备音频</string>
+    <string name="stations">电台</string>
+    <string name="msg_no_bluetooth">蓝牙不可用</string>
     <string name="msg_pair_in_settings">请在蓝牙设置中添加“%1$s”，声音随后会自动切换</string>
     <string name="msg_bluetooth_failed">%1$s：蓝牙连接失败</string>
     <string name="sources">音源</string>

@@ -121,7 +121,12 @@ fun MainScreen(
                     Hint(stringResource(R.string.no_devices_hint))
                 }
             }
-            if (vm.data.stations.isNotEmpty()) item { SectionTitle(stringResource(R.string.radio_stations)) }
+            // With device audio the list holds different kinds of sources, otherwise only stations.
+            val hasDeviceAudio = vm.deviceAudio.devices().isNotEmpty()
+            if (hasDeviceAudio || vm.data.stations.isNotEmpty()) {
+                item { SectionTitle(stringResource(if (hasDeviceAudio) R.string.sources else R.string.stations)) }
+            }
+            if (hasDeviceAudio) item(key = "device-audio") { DeviceAudioBar(vm) }
             items(vm.data.stations, key = { it.id }) { station ->
                 // Long-press a station bar and drag it to sort the list.
                 ReorderableItem(reorderState, key = station.id) { dragging ->
@@ -146,14 +151,15 @@ fun MainScreen(
             if (vm.data.devices.isNotEmpty()) {
                 item {
                     Row(
-                        Modifier.fillMaxWidth().clip(RoundedCornerShape(8.dp)).clickable { devicesExpanded = !devicesExpanded },
+                        Modifier.fillMaxWidth().clip(RoundedCornerShape(8.dp)).clickable { devicesExpanded = !devicesExpanded }
+                            .padding(vertical = 6.dp),
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
-                        SectionTitle(stringResource(R.string.volume_and_inputs))
+                        SectionTitle(stringResource(R.string.volume_and_inputs), Modifier.padding(start = 4.dp))
                         Icon(
                             if (devicesExpanded) Icons.Filled.ExpandLess else Icons.Filled.ExpandMore,
                             if (devicesExpanded) stringResource(R.string.collapse) else stringResource(R.string.expand),
-                            Modifier.padding(start = 4.dp, top = 8.dp),
+                            Modifier.padding(start = 4.dp),
                             tint = MaterialTheme.colorScheme.primary,
                         )
                     }
@@ -210,7 +216,7 @@ private fun StationBar(
 }
 
 @Composable
-private fun DeviceButton(abbr: String, active: Boolean, online: Boolean, busy: Boolean, onClick: () -> Unit) {
+fun DeviceButton(abbr: String, active: Boolean, online: Boolean, busy: Boolean, onClick: () -> Unit) {
     val colors = MaterialTheme.colorScheme
     Surface(
         onClick = onClick,
@@ -354,12 +360,12 @@ fun StationImage(url: String, sizeDp: Int) {
 }
 
 @Composable
-fun SectionTitle(text: String) {
+fun SectionTitle(text: String, modifier: Modifier = Modifier.padding(start = 4.dp, top = 8.dp)) {
     Text(
         text,
         style = MaterialTheme.typography.labelLarge,
         color = MaterialTheme.colorScheme.primary,
-        modifier = Modifier.padding(start = 4.dp, top = 8.dp),
+        modifier = modifier,
     )
 }
 

@@ -2,7 +2,6 @@
 <resources>
     <string name="settings">Configurações</string>
     <string name="no_devices_hint">Nenhum dispositivo ainda. Toque na engrenagem no canto superior direito para adicionar seus dispositivos WiiM.</string>
-    <string name="radio_stations">Estações de rádio</string>
     <string name="add_station">Adicionar estação</string>
     <string name="volume_and_inputs">Volume e entradas</string>
     <string name="collapse">Recolher</string>
@@ -80,4 +79,10 @@
     <string name="input_aux">AUX</string>
     <string name="mute">Silenciar</string>
     <string name="unmute">Ativar som</string>
+    <string name="device_audio">Áudio do dispositivo</string>
+    <string name="stations">Estações</string>
+    <string name="msg_no_bluetooth">Bluetooth indisponível</string>
+    <string name="msg_pair_in_settings">Adicione “%1$s” nas definições de Bluetooth – o som muda automaticamente</string>
+    <string name="msg_bluetooth_failed">%1$s: falha na ligação Bluetooth</string>
+    <string name="sources">Fontes</string>
 </resources>

@@ -5,6 +5,40 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
 import java.util.concurrent.TimeUnit
 
+/** Bluetooth of the computer. Linux pairs by itself and connects from the computer (about 2 s, the WiiM takes about 4 s). */
+class DesktopBluetooth : LocalBluetooth {
+    private var address: String? = null
+    private var looked = false
+
+    /** Asked once: on Windows this takes a moment, and it's needed every few seconds. */
+    private suspend fun address(): String? {
+        if (!looked) {
+            address = PcBluetooth.address()
+            looked = true
+        }
+        return address
+    }
+
+    override val canPairItself get() = !isWindows
+
+    override suspend fun ready() = address() != null
+
+    override suspend fun name() = PcBluetooth.name()
+
+    override suspend fun sourceAddress(history: List<BtSource>) = address()
+
+    override suspend fun isPaired(wiimMac: String, history: List<BtSource>) =
+        if (isWindows) history.any { it.address == address() } else PcBluetooth.isPaired(wiimMac)
+
+    override suspend fun pair(wiimMac: String) = PcBluetooth.pair(wiimMac)
+
+    override suspend fun connect(wiimMac: String) = !isWindows && PcBluetooth.connect(wiimMac) != null
+
+    override fun openSettings() = PcBluetooth.openSettings()
+
+    override fun log(text: String) = Log.log(text)
+}
+
 /**
  * The computer's own Bluetooth: its address (the WiiM connects itself to it) and, on Linux, pairing via bluetoothctl.
  * On Windows pairing is left to the Windows settings, since there is no command line tool for it.

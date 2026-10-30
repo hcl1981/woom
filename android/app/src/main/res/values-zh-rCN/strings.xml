@@ -2,7 +2,6 @@
 <resources>
     <string name="settings">设置</string>
     <string name="no_devices_hint">还没有设备。点按右上角的齿轮添加你的 WiiM 设备。</string>
-    <string name="radio_stations">电台</string>
     <string name="add_station">添加电台</string>
     <string name="volume_and_inputs">音量与输入</string>
     <string name="collapse">收起</string>
@@ -80,4 +79,10 @@
     <string name="input_aux">AUX</string>
     <string name="mute">静音</string>
     <string name="unmute">取消静音</string>
+    <string name="device_audio">设备音频</string>
+    <string name="stations">电台</string>
+    <string name="msg_no_bluetooth">蓝牙不可用</string>
+    <string name="msg_pair_in_settings">请在蓝牙设置中添加“%1$s”，声音随后会自动切换</string>
+    <string name="msg_bluetooth_failed">%1$s：蓝牙连接失败</string>
+    <string name="sources">音源</string>
 </resources>

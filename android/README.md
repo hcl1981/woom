@@ -18,6 +18,8 @@ Prebuilt app: `../Woom.apk` (Android 9 or newer). Build: `./gradlew assembleRele
   and a settings icon (name, abbreviation, shown inputs – only in Woom, not on the device).
 - Names that are too long scroll as marquee text.
 
+- **Device audio** (first bar, can be switched off in the settings): plays the phone's sound on one WiiM over Bluetooth. Android lets apps neither pair nor connect audio nor read the phone's address, so the first time the user adds the WiiM in the Android Bluetooth settings; afterwards the WiiM connects itself. The phone is found by its Bluetooth name in the WiiM's list of known sources.
+
 ## Languages
 
 System language automatically (from Android 13 also selectable per app): English (default), German, French, Spanish,

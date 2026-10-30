@@ -7,6 +7,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
@@ -46,9 +47,25 @@ sealed interface Msg {
     data class VolumeFailed(val device: String) : Msg
     data class PresetSaved(val device: String, val slot: Int) : Msg
     data class PresetFailed(val device: String, val reason: String) : Msg
+    data object NoBluetooth : Msg
+    data class PairInSettings(val device: String) : Msg
+    data class BluetoothFailed(val device: String) : Msg
 }
 
-class WoomViewModel(private val store: Store, private val scanner: Scanner) : ViewModel() {
+/**
+ * The device to join in order to play along with [playing]. Those can also be followers of a group,
+ * so a follower stands for its leader. [self] never leads; a device that can't be asked is skipped.
+ */
+suspend fun groupLeader(playing: List<Device>, all: List<Device>, self: String, info: suspend (Device) -> DeviceInfo?): Device? {
+    for (device in playing) {
+        val state = info(device) ?: continue
+        val leader = if (state.group == 0) device else all.firstOrNull { it.uuid.equals(state.masterUuid, ignoreCase = true) }
+        if (leader != null && leader.uuid != self) return leader
+    }
+    return null
+}
+
+class WoomViewModel(private val store: Store, private val scanner: Scanner, bluetooth: LocalBluetooth) : ViewModel() {
     var data by mutableStateOf(store.load())
         private set
 
@@ -71,6 +88,9 @@ class WoomViewModel(private val store: Store, private val scanner: Scanner) : Vi
     private var pollJob: Job? = null
     private var logosChecked = false
     private val lastAction = mutableMapOf<String, Long>()
+
+    /** Stations being started right now (station id → finished). */
+    private val startingStation = mutableMapOf<String, CompletableDeferred<Unit>>()
 
     /** "<device>: not reachable" for network failures, otherwise "<device>: <technical reason>". */
     private fun failure(device: String, e: Throwable): Msg = when (e) {
@@ -118,6 +138,8 @@ class WoomViewModel(private val store: Store, private val scanner: Scanner) : Vi
     }
 
     fun device(uuid: String) = data.devices.firstOrNull { it.uuid == uuid }
+
+    fun setDeviceAudio(enabled: Boolean) = update { it.copy(deviceAudio = enabled) }
 
     // --- devices -------------------------------------------------------------------------------
 
@@ -270,30 +292,16 @@ class WoomViewModel(private val store: Store, private val scanner: Scanner) : Vi
         lastAction[uuid] = System.currentTimeMillis()
         viewModelScope.launch {
             try {
-                // Ask the device itself: the polled state can be seconds old right after (un)grouping.
-                val isFollower = Wiim.deviceInfo(dev.ip).group > 0
                 if (activeStation[uuid] == station.id) {
-                    if (isFollower) {
+                    // Ask the device itself: the polled state can be seconds old right after (un)grouping.
+                    if (Wiim.deviceInfo(dev.ip).group > 0) {
                         Wiim.leaveGroup(dev.ip)
                     } else {
                         handOverAndStop(dev, station)
                     }
                     activeStation.remove(uuid)
                 } else {
-                    val leader = data.devices.firstOrNull {
-                        it.uuid != uuid && activeStation[it.uuid] == station.id && live[it.uuid]?.online == true
-                    }?.takeIf { runCatching { Wiim.deviceInfo(it.ip).group == 0 }.getOrDefault(false) }
-                    if (isFollower) {
-                        Wiim.leaveGroup(dev.ip)
-                        delay(1000)
-                    }
-                    if (leader != null) {
-                        Wiim.joinGroup(dev.ip, leader.ip, leader.uuid)
-                    } else {
-                        Wiim.playStation(dev.ip, station)
-                        followersOf(uuid).forEach { activeStation[it] = station.id }
-                    }
-                    activeStation[uuid] = station.id
+                    startInSync(dev, station)
                 }
             } catch (e: Exception) {
                 message = failure(dev.name, e)
@@ -302,6 +310,39 @@ class WoomViewModel(private val store: Store, private val scanner: Scanner) : Vi
                 lastAction[uuid] = System.currentTimeMillis()
                 pollAll()
             }
+        }
+    }
+
+    /**
+     * Joins the device that already plays [station], or starts it. One device at a time per station:
+     * a station only counts as playing once it has started, so buttons tapped in quick succession
+     * would otherwise each start their own, unsynchronized stream.
+     */
+    private suspend fun startInSync(dev: Device, station: Station) {
+        while (true) (startingStation[station.id] ?: break).await()
+        val done = CompletableDeferred<Unit>()
+        startingStation[station.id] = done
+        try {
+            // Right after opening nothing is known yet about what the devices are playing.
+            if (data.devices.none { activeStation[it.uuid] == station.id }) pollAll()
+            val playing = data.devices.filter {
+                it.uuid != dev.uuid && activeStation[it.uuid] == station.id && live[it.uuid]?.online == true
+            }
+            val leader = groupLeader(playing, data.devices, dev.uuid) { runCatching { Wiim.deviceInfo(it.ip) }.getOrNull() }
+            if (Wiim.deviceInfo(dev.ip).group > 0) {
+                Wiim.leaveGroup(dev.ip)
+                delay(1000)
+            }
+            if (leader != null) {
+                Wiim.joinGroup(dev.ip, leader.ip, leader.uuid)
+            } else {
+                Wiim.playStation(dev.ip, station)
+                followersOf(dev.uuid).forEach { activeStation[it] = station.id }
+            }
+            activeStation[dev.uuid] = station.id
+        } finally {
+            startingStation.remove(station.id)
+            done.complete(Unit)
         }
     }
 
@@ -462,6 +503,8 @@ class WoomViewModel(private val store: Store, private val scanner: Scanner) : Vi
             if (state.online && state.mode in 1..39) lastInput.remove(dev.uuid)
         }
     }
+
+    val deviceAudio = DeviceAudio(this, bluetooth)
 
     override fun onCleared() {
         scanner.stop()

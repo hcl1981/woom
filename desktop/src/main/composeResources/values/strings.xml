@@ -6,7 +6,6 @@
     <!-- Main screen -->
     <string name="settings">Settings</string>
     <string name="no_devices_hint">No devices yet. Click the gear icon at the top right to add your WiiM devices.</string>
-    <string name="radio_stations">Radio stations</string>
     <string name="add_station">Add station</string>
     <string name="volume_and_inputs">Volume &amp; inputs</string>
     <string name="collapse">Collapse</string>
@@ -99,8 +98,9 @@
     <string name="tray_quit">Quit</string>
     <string name="autostart">Start Woom at login</string>
     <string name="station_list">Station list</string>
-    <string name="computer_audio">Computer</string>
-    <string name="msg_no_bluetooth">This computer has no Bluetooth</string>
+    <string name="device_audio">Device audio</string>
+    <string name="stations">Stations</string>
+    <string name="msg_no_bluetooth">No Bluetooth available</string>
     <string name="msg_pair_in_settings">In the Bluetooth settings, add “%1$s” – the sound then switches over by itself</string>
     <string name="msg_bluetooth_failed">%1$s: Bluetooth connection failed</string>
     <string name="sources">Sources</string>

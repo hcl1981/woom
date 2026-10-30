@@ -36,6 +36,9 @@ data class DeviceInfo(
 /** Bluetooth input of a device (getbtstatus): whether a source is connected and its Bluetooth name. */
 data class BtStatus(val connected: Boolean, val source: String)
 
+/** A Bluetooth source a device remembers from pairing; [address] is upper case. */
+data class BtSource(val name: String, val address: String)
+
 /** Snapshot of getPlayerStatus. */
 data class PlayerStatus(val status: String, val mode: Int, val title: String, val vol: Int, val mute: Boolean = false)
 
@@ -164,10 +167,13 @@ object Wiim {
         return BtStatus(sink.str("link_state") == "connected", sink.str("name"))
     }
 
-    /** Addresses (upper case) of the sources the device has been paired with. */
-    suspend fun btHistory(ip: String): List<String> =
-        json.parseToJsonElement(cmd(ip, "getbthistory")).jsonObject["list"]?.jsonArray
-            ?.mapNotNull { (it as? JsonObject)?.str("ad")?.uppercase() }.orEmpty()
+    /** The sources the device has been paired with. */
+    suspend fun btHistory(ip: String): List<BtSource> = parseBtHistory(cmd(ip, "getbthistory"))
+
+    /** `{"num":1,"list":[{"name":"iPad","ad":"14:88:e6:5d:71:f0","role":"Audio Source"}]}` */
+    fun parseBtHistory(raw: String): List<BtSource> =
+        json.parseToJsonElement(raw).jsonObject["list"]?.jsonArray
+            ?.mapNotNull { (it as? JsonObject)?.let { o -> BtSource(o.str("name"), o.str("ad").uppercase()) } }.orEmpty()
 
     /** Makes the device visible for pairing. */
     suspend fun btEnterPairing(ip: String) = cmd(ip, "btavkenterpair")

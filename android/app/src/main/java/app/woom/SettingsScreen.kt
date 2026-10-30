@@ -31,6 +31,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
@@ -116,6 +117,16 @@ fun SettingsScreen(vm: WoomViewModel, onBack: () -> Unit) {
                     TextButton(onClick = { vm.addDeviceByIp(manualIp); manualIp = "" }, enabled = manualIp.isNotBlank()) {
                         Text(stringResource(R.string.add))
                     }
+                }
+            }
+
+            item {
+                Row(
+                    Modifier.fillMaxWidth().padding(top = 12.dp, start = 4.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Text(stringResource(R.string.device_audio), Modifier.weight(1f))
+                    Switch(checked = vm.data.deviceAudio, onCheckedChange = vm::setDeviceAudio)
                 }
             }
         }

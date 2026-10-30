@@ -28,7 +28,7 @@ import java.io.File
 
 class MainActivity : ComponentActivity() {
     private val vm: WoomViewModel by viewModels {
-        viewModelFactory { initializer { WoomViewModel(Store(File(filesDir, "woom.json")), Discovery(application)) } }
+        viewModelFactory { initializer { WoomViewModel(Store(File(filesDir, "woom.json")), Discovery(application), AndroidBluetooth(application)) } }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
