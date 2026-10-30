@@ -21,7 +21,6 @@ import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.input.key.KeyEventType
 import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.type
-import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.awt.ComposeDialog
@@ -30,7 +29,6 @@ import androidx.compose.ui.window.application
 import dev.nucleusframework.composenativetray.tray.api.Tray
 import kotlinx.coroutines.delay
 import org.jetbrains.compose.resources.stringResource
-import java.awt.Dimension
 import java.awt.GraphicsEnvironment
 import java.awt.Point
 import java.awt.Rectangle
@@ -50,7 +48,11 @@ import javax.swing.WindowConstants
 import kotlin.concurrent.thread
 import kotlin.system.exitProcess
 
-private val WINDOW_SIZE = DpSize(400.dp, 640.dp)
+private const val WINDOW_WIDTH = 400
+
+/** Height of the settings and station editor; the main list sizes the window to its content. */
+private const val FORM_HEIGHT = 640
+private const val MIN_HEIGHT = 200
 
 /** Port on localhost that a second start uses to bring up the window of the running instance. */
 private const val INSTANCE_PORT = 47853
@@ -59,6 +61,9 @@ private const val INSTANCE_PORT = 47853
 private object Popup {
     var visible by mutableStateOf(false)
     var hiddenAt = 0L
+
+    /** Height (dp) the main list needs, or null if it doesn't fit and the window should be as tall as possible. */
+    var contentHeight by mutableStateOf<Int?>(null)
 
     fun show() {
         visible = true
@@ -123,8 +128,7 @@ fun main(args: Array<String>) {
                     isAlwaysOnTop = true
                     defaultCloseOperation = WindowConstants.DO_NOTHING_ON_CLOSE
                     isModal = false
-                    size = Dimension(WINDOW_SIZE.width.value.toInt(), WINDOW_SIZE.height.value.toInt())
-                    location = popupPosition()
+                    bounds = popupBounds(FORM_HEIGHT)
                 }
             },
             dispose = { it.dispose(); it.owner.dispose() },
@@ -137,10 +141,12 @@ fun main(args: Array<String>) {
                 window.addWindowListener(listener)
                 onDispose { window.removeWindowListener(listener) }
             }
+            val height = if (screen == null) Popup.contentHeight ?: Int.MAX_VALUE else FORM_HEIGHT
+            LaunchedEffect(height) { if (Popup.visible) window.bounds = popupBounds(height) }
             LaunchedEffect(Popup.visible) {
                 if (Popup.visible) {
                     // Set after showing: the window manager may place a newly mapped window on its own.
-                    window.location = popupPosition()
+                    window.bounds = popupBounds(height)
                     window.toFront()
                     skipTaskbar(window)
                     // Again once the window manager has surely mapped the window; before that the request is lost.
@@ -167,6 +173,7 @@ private fun App(vm: WoomViewModel, computer: ComputerAudio, screen: String?, onS
             onSettings = { onScreen(SETTINGS) },
             onEditStation = { onScreen(it) },
             onAddStation = { val st = vm.newStation(); draft = st.id; onScreen(st.id) },
+            onContentHeight = { Popup.contentHeight = it },
             computer = computer,
         )
         SETTINGS -> SettingsScreen(vm, onBack = { onScreen(null) })
@@ -195,16 +202,18 @@ private fun loadIcon(): BufferedImage = ImageIO.read(Popup::class.java.getResour
 /**
  * Top or bottom right corner of the main screen's usable area, depending on where the panel is:
  * that is where the tray usually sits (the tray icon doesn't report its own position).
+ * The window stays attached to the panel when its [height] changes, and never gets taller than the screen.
  */
-private fun popupPosition(): Point {
+private fun popupBounds(height: Int): Rectangle {
     val config = GraphicsEnvironment.getLocalGraphicsEnvironment().defaultScreenDevice.defaultConfiguration
     val insets = Toolkit.getDefaultToolkit().getScreenInsets(config)
     val b = config.bounds
     val area = Rectangle(b.x + insets.left, b.y + insets.top, b.width - insets.left - insets.right, b.height - insets.top - insets.bottom)
     val margin = 8
-    val x = area.x + area.width - WINDOW_SIZE.width.value.toInt() - margin
-    val y = if (insets.top > insets.bottom) area.y + margin else area.y + area.height - WINDOW_SIZE.height.value.toInt() - margin
-    return Point(x, y)
+    val h = height.coerceIn(MIN_HEIGHT, area.height - 2 * margin)
+    val x = area.x + area.width - WINDOW_WIDTH - margin
+    val y = if (insets.top > insets.bottom) area.y + margin else area.y + area.height - h - margin
+    return Rectangle(x, y, WINDOW_WIDTH, h)
 }
 
 /** Allows only one running Woom; a second start opens the window of the first one and quits. */

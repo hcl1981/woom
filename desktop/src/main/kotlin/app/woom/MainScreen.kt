@@ -59,12 +59,14 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import org.jetbrains.compose.resources.stringResource
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -84,6 +86,7 @@ fun MainScreen(
     onEditStation: (String) -> Unit,
     onAddStation: () -> Unit,
     computer: ComputerAudio,
+    onContentHeight: (Int?) -> Unit,
 ) {
     val snackbar = remember { SnackbarHostState() }
     val text = vm.message?.text().orEmpty()
@@ -107,6 +110,22 @@ fun MainScreen(
         },
         snackbarHost = { SnackbarHost(snackbar) },
     ) { padding ->
+        // Reports how tall the window must be to show the whole list (null: it doesn't fit, use the full height).
+        val density = LocalDensity.current
+        val top = padding.calculateTopPadding()
+        LaunchedEffect(listState, top) {
+            snapshotFlow {
+                val info = listState.layoutInfo
+                val first = info.visibleItemsInfo.firstOrNull()
+                val last = info.visibleItemsInfo.lastOrNull()
+                val allVisible = first != null && last != null && first.index == 0 && listState.firstVisibleItemScrollOffset == 0 &&
+                    last.index == info.totalItemsCount - 1 && last.offset + last.size <= info.viewportEndOffset - info.afterContentPadding
+                if (allVisible) last!!.offset + last.size + info.afterContentPadding - info.viewportStartOffset else null
+            }.collect { px ->
+                // 2 dp spare, so rounding can't cut off the last item and make the window grow again.
+                onContentHeight(px?.let { with(density) { (top + it.toDp()).value.toInt() + 2 } })
+            }
+        }
         LazyColumn(
             state = listState,
             modifier = Modifier.fillMaxSize().padding(padding),
