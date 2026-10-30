@@ -3,6 +3,8 @@ package app.woom
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import java.io.File
+import java.nio.file.Files
+import java.nio.file.StandardCopyOption
 
 /** A WiiM device the user added. [uuid] is the 24-hex `uuid` from getStatusEx. */
 @Serializable
@@ -47,7 +49,20 @@ class Store(private val file: File) {
         file.parentFile?.mkdirs()
         val tmp = File(file.parentFile, file.name + ".tmp")
         tmp.writeText(json.encodeToString(AppData.serializer(), data))
-        tmp.renameTo(file)
+        // Replace the old file atomically. File.renameTo does NOT overwrite an existing file on
+        // Windows (it just returns false), which silently dropped every change after the first save —
+        // added devices, logos, order. Files.move with REPLACE_EXISTING does overwrite.
+        try {
+            Files.move(tmp.toPath(), file.toPath(), StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.ATOMIC_MOVE)
+        } catch (_: Exception) {
+            // ATOMIC_MOVE is not supported on every filesystem; fall back to a plain replace.
+            runCatching {
+                Files.move(tmp.toPath(), file.toPath(), StandardCopyOption.REPLACE_EXISTING)
+            }.onFailure {
+                file.writeText(tmp.readText())
+                tmp.delete()
+            }
+        }
     }
 }
 
