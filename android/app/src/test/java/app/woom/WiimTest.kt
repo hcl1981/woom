@@ -148,4 +148,13 @@ class WiimTest {
         assertEquals(null, groupLeader(listOf(az), listOf(az, sz), "SZ") { info(1, "SZ") })
         assertEquals(null, groupLeader(listOf(az), listOf(az, sz), "SZ") { null })
     }
+
+    @Test
+    fun readsStationNameFromTrackMetadata() {
+        // Shape of GetInfoEx on a WiiM Sound playing a station started by the WiiM app.
+        val didl = """<?xml version="1.0"?><DIDL-Lite xmlns="urn:schemas-upnp-org:metadata-1-0/DIDL-Lite/"><item id="https://example.org/a.aac" type="station" name="Rock &amp; Pop"></item></DIDL-Lite>"""
+        val raw = "<TrackURI>https://example.org/a.aac</TrackURI><TrackMetaData>${Wiim.xml(didl)}</TrackMetaData>"
+        assertEquals(NowPlaying("https://example.org/a.aac", "Rock & Pop"), Wiim.parseNowPlaying(raw))
+        assertEquals(NowPlaying("x", ""), Wiim.parseNowPlaying("<TrackURI>x</TrackURI>"))
+    }
 }

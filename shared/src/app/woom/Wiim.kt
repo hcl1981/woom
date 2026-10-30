@@ -39,6 +39,9 @@ data class BtStatus(val connected: Boolean, val source: String)
 /** A Bluetooth source a device remembers from pairing; [address] is upper case. */
 data class BtSource(val name: String, val address: String)
 
+/** What AVTransport reports: the stream, and the station's name if it is a radio station. */
+data class NowPlaying(val uri: String, val stationName: String)
+
 /** Snapshot of getPlayerStatus. */
 data class PlayerStatus(val status: String, val mode: Int, val title: String, val vol: Int, val mute: Boolean = false)
 
@@ -139,9 +142,18 @@ object Wiim {
      * URL the device is playing (AVTransport GetInfoEx TrackURI). Unlike the title, this does not
      * change when a radio stream sends its own programme info.
      */
-    suspend fun trackUri(ip: String): String =
-        tag(soap(ip, "rendertransport1", "urn:schemas-upnp-org:service:AVTransport:1", "GetInfoEx",
-            "<InstanceID>0</InstanceID>"), "TrackURI").orEmpty()
+    suspend fun trackUri(ip: String): String = nowPlaying(ip).uri
+
+    suspend fun nowPlaying(ip: String): NowPlaying =
+        parseNowPlaying(soap(ip, "rendertransport1", "urn:schemas-upnp-org:service:AVTransport:1", "GetInfoEx",
+            "<InstanceID>0</InstanceID>"))
+
+    /** The station name sits in the track metadata, which is XML escaped twice: `<item type="station" name="…">`. */
+    fun parseNowPlaying(xmlText: String): NowPlaying {
+        val metadata = unxml(tag(xmlText, "TrackMetaData").orEmpty())
+        val name = Regex("<item\\b[^>]*\\btype=\"station\"[^>]*\\bname=\"([^\"]*)\"").find(metadata)?.groupValues?.get(1)
+        return NowPlaying(tag(xmlText, "TrackURI").orEmpty(), name?.let(::unxml).orEmpty())
+    }
 
     suspend fun stop(ip: String) = cmd(ip, "setPlayerCmd:stop")
 

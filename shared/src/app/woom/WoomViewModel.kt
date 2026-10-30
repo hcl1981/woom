@@ -492,11 +492,13 @@ class WoomViewModel(private val store: Store, private val scanner: Scanner, blue
                 }
                 state.isPlaying && state.mode in 1..39 -> {
                     // Match by stream URL: radio streams replace the title with their programme info.
-                    val uri = runCatching { Wiim.trackUri(dev.ip) }.getOrNull()
-                    val match = data.stations.firstOrNull { it.url == uri }
+                    val playing = runCatching { Wiim.nowPlaying(dev.ip) }.getOrNull()
+                    val match = data.stations.firstOrNull { it.url == playing?.uri }
+                        // Other apps may play the same station from another stream, e.g. in a different quality.
+                        ?: data.stations.firstOrNull { it.name.equals(playing?.stationName, ignoreCase = true) }
                         ?: data.stations.firstOrNull { it.name == state.title || it.url == state.title }
                     if (match != null) activeStation[dev.uuid] = match.id
-                    else if (uri != null) activeStation.remove(dev.uuid)
+                    else if (playing != null) activeStation.remove(dev.uuid)
                 }
                 else -> activeStation.remove(dev.uuid)
             }
