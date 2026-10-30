@@ -89,6 +89,7 @@ fun main(args: Array<String>) {
     if (!hidden) Splash.show()
     val vm = WoomViewModel(Store(File(configDir(), "woom.json")), NetworkScanner(), DesktopBluetooth())
     if (!hidden) Popup.show()
+    Autostart.enableOnFirstStart()
     // Keeps the start-at-login entry pointing at this program, e.g. after an update renamed or moved it.
     if (Autostart.available && Autostart.isEnabled()) Autostart.set(true)
     val icon = loadIcon().toComposeImageBitmap()

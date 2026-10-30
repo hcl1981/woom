@@ -94,6 +94,18 @@ object Autostart {
 
     val available get() = launcher != null
 
+    /**
+     * Linux: switches start at login on the first time Woom runs after being installed. The marker file
+     * keeps it from coming back if the user turns it off. (On Windows the installer takes care of this.)
+     */
+    fun enableOnFirstStart() {
+        val marker = File(configDir(), "autostart-enabled-once")
+        if (isWindows || !available || marker.exists()) return
+        set(true)
+        marker.parentFile.mkdirs()
+        marker.writeText("")
+    }
+
     fun isEnabled(): Boolean =
         if (isWindows) runCatching { run("reg", "query", RUN_KEY, "/v", "Woom") == 0 }.getOrDefault(false)
         else desktopFile.exists()

@@ -46,7 +46,7 @@ compose.desktop {
         nativeDistributions {
             targetFormats(TargetFormat.Deb)
             packageName = "Woom"
-            packageVersion = "1.0.7"
+            packageVersion = "1.0.8"
             description = "Remote control for WiiM streamers"
             vendor = "Woom"
             modules("java.instrument", "java.naming", "jdk.crypto.ec", "jdk.unsupported")

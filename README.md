@@ -18,7 +18,7 @@ on several devices, and switch volume and inputs. No account, no cloud, everythi
   stream URL and logo. Any stream URL can also be entered by hand.
 - **Presets:** save a station to the device's preset buttons.
 - **Volume, mute and inputs** (line-in, optical, Bluetooth, HDMI, phono, …) per device.
-- **PC version as tray icon:** a small window next to the clock, no taskbar entry, optional start at login.
+- **PC version as tray icon:** a small window next to the clock, no taskbar entry, starts at login (can be switched off).
 - **Device audio:** plays the sound of your phone or computer over Bluetooth on one WiiM. Low delay, and video
   players compensate for it, so films stay in sync. Can be switched off in the settings.
 - Devices are found automatically on the local network (or added by IP address).

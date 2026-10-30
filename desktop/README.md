@@ -16,7 +16,7 @@ The same remote as the Android app, as a small window at the tray icon (notifica
   where you add the WiiM once – after that the WiiM connects to the PC by itself.
 - Stations, device buttons, volume, mute, inputs, presets and station search as in the app.
   Stations can be dragged to another position with the mouse.
-- **Settings:** find/add devices and "Start Woom at login" (then starts in the tray only).
+- **Settings:** find/add devices and "Start Woom at login", which is on after installing (then starts in the tray only).
 - Starting Woom a second time simply opens the window of the already running Woom.
 
 The station list is independent of the Android app (no sync).
