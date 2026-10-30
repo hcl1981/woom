@@ -1,6 +1,9 @@
 package app.woom
 
 import androidx.compose.runtime.Composable
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.withContext
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
 import java.io.File
@@ -50,6 +53,27 @@ fun Msg.text(): String = when (this) {
 
 val isWindows = System.getProperty("os.name").startsWith("Windows")
 
+/**
+ * Linux: waits for the desktop's tray service. At login it can start after Woom, and the tray library
+ * registers only once, so Woom would run without an icon. Gives up after a minute (e.g. GNOME has no such service).
+ */
+suspend fun awaitTrayService() {
+    if (isWindows) return
+    withContext(Dispatchers.IO) {
+        repeat(60) {
+            val output = runCatching {
+                val p = ProcessBuilder(
+                    "gdbus", "call", "--session", "--dest", "org.freedesktop.DBus", "--object-path", "/org/freedesktop/DBus",
+                    "--method", "org.freedesktop.DBus.NameHasOwner", "org.kde.StatusNotifierWatcher",
+                ).redirectErrorStream(true).start()
+                p.inputStream.bufferedReader().readText().also { p.waitFor() }
+            }.getOrNull() ?: return@withContext // Without gdbus there is nothing to wait for.
+            if ("true" in output) return@withContext
+            delay(1000)
+        }
+    }
+}
+
 /** %APPDATA%\Woom on Windows, $XDG_CONFIG_HOME/woom (usually ~/.config/woom) elsewhere. */
 fun configDir(): File =
     if (isWindows) File(System.getenv("APPDATA") ?: System.getProperty("user.home"), "Woom")
@@ -88,7 +112,7 @@ object Autostart {
                 Type=Application
                 Name=Woom
                 Exec="$exe" $HIDDEN
-                Icon=woom
+                Icon=${File(exe).parentFile.parentFile}/lib/Woom.png
                 Terminal=false
                 X-GNOME-Autostart-enabled=true
                 """.trimIndent() + "\n",

@@ -98,17 +98,24 @@ fun main(args: Array<String>) {
         // Click on the tray icon opens or closes the window; its menu offers "Open" and "Quit".
         val openText = stringResource(Res.string.tray_open)
         val quitText = stringResource(Res.string.tray_quit)
-        Tray(
-            icon = BitmapPainter(icon),
-            tooltip = "Woom",
-            primaryAction = {
-                // The click on the icon first deactivates (and so hides) an open window; don't reopen it then.
-                if (Popup.visible || System.currentTimeMillis() - Popup.hiddenAt < 400) Popup.hide() else Popup.show()
-            },
-        ) {
-            Item(label = openText) { Popup.show() }
-            Divider()
-            Item(label = quitText) { exitApplication() }
+        var trayReady by remember { mutableStateOf(false) }
+        LaunchedEffect(Unit) {
+            awaitTrayService()
+            trayReady = true
+        }
+        if (trayReady) {
+            Tray(
+                icon = BitmapPainter(icon),
+                tooltip = "Woom",
+                primaryAction = {
+                    // The click on the icon first deactivates (and so hides) an open window; don't reopen it then.
+                    if (Popup.visible || System.currentTimeMillis() - Popup.hiddenAt < 400) Popup.hide() else Popup.show()
+                },
+            ) {
+                Item(label = openText) { Popup.show() }
+                Divider()
+                Item(label = quitText) { exitApplication() }
+            }
         }
         LaunchedEffect(Popup.visible) {
             if (Popup.visible) {
