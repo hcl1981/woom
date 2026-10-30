@@ -77,10 +77,19 @@ private object Popup {
 
 @OptIn(ExperimentalComposeUiApi::class)
 fun main(args: Array<String>) {
-    if (!acquireSingleInstance()) exitProcess(0)
+    Log.log("start: args=[${args.joinToString(" ")}] os=${System.getProperty("os.name")} java=${System.getProperty("java.version")}")
+    if (!acquireSingleInstance()) {
+        Log.log("start: another instance already running — bringing it to the front and exiting")
+        exitProcess(0)
+    }
+    val hidden = Autostart.HIDDEN in args
+    // Immediate feedback: the first cold start on Windows can take a while (virus scan of the unsigned
+    // program, one-time unpacking of the graphics library). The splash appears at once, long before
+    // Compose is ready, and is closed as soon as the real window shows (see below).
+    if (!hidden) Splash.show()
     val vm = WoomViewModel(Store(File(configDir(), "woom.json")), NetworkScanner())
     val computer = ComputerAudio(vm)
-    if (Autostart.HIDDEN !in args) Popup.show()
+    if (!hidden) Popup.show()
     // Keeps the start-at-login entry pointing at this program, e.g. after an update renamed or moved it.
     if (Autostart.available && Autostart.isEnabled()) Autostart.set(true)
     val icon = loadIcon().toComposeImageBitmap()
@@ -133,6 +142,11 @@ fun main(args: Array<String>) {
             },
             dispose = { it.dispose(); it.owner.dispose() },
         ) {
+            // The real window is up now — close the start-up splash.
+            LaunchedEffect(Unit) {
+                Log.log("start: main window shown")
+                Splash.hide()
+            }
             // Behaves like a tray flyout: clicking anywhere else closes it.
             DisposableEffect(window) {
                 val listener = object : WindowAdapter() {

@@ -66,12 +66,19 @@ class ComputerAudio(private val vm: WoomViewModel) {
         vm.busy[key] = true
         vm.viewModelScope.launch {
             try {
+                Log.log("ComputerAudio: tap device=${dev.name} ip=${dev.ip} connected=$connected")
                 if (connected == uuid) {
                     Wiim.btDisconnectAll(dev.ip)
                     connected = null
+                    Log.log("ComputerAudio: disconnected ${dev.name}")
                     return@launch
                 }
-                val pc = PcBluetooth.address() ?: run { vm.message = NoBluetooth; return@launch }
+                val pc = PcBluetooth.address() ?: run {
+                    Log.log("ComputerAudio: no Bluetooth adapter found on this PC")
+                    vm.message = NoBluetooth
+                    return@launch
+                }
+                Log.log("ComputerAudio: PC Bluetooth address=$pc")
                 // One device at a time: release the previous one first.
                 connected?.let { prev -> vm.device(prev)?.let { runCatching { Wiim.btDisconnectAll(it.ip) } } }
                 connected = null
@@ -84,17 +91,40 @@ class ComputerAudio(private val vm: WoomViewModel) {
                 // The station bar would only notice at its next poll.
                 vm.activeStation.remove(uuid)
                 if (isWindows) {
-                    if (pc !in Wiim.btHistory(dev.ip)) {
-                        // First time: the user adds the WiiM in the Windows settings, Windows then connects.
+                    val history = runCatching { Wiim.btHistory(dev.ip) }.getOrDefault(emptyList())
+                    if (pc !in history) {
+                        // First time: the WiiM becomes discoverable, the user adds it in the Windows
+                        // Bluetooth settings, Windows pairs and usually connects by itself. Keep the device
+                        // discoverable, wait for the pairing, then make sure the link is up.
+                        Log.log("ComputerAudio: first-time pairing ${dev.name} (pc not in history=$history)")
                         Wiim.btEnterPairing(dev.ip)
                         PcBluetooth.openSettings()
                         vm.message = PairInSettings(dev.name)
-                        if (awaitConnected(dev.ip, 120)) connected = uuid else vm.message = BluetoothFailed(dev.name)
+                        if (!awaitPaired(dev.ip, pc, seconds = 180)) {
+                            Log.log("ComputerAudio: pairing not completed in time for ${dev.name}")
+                            vm.message = BluetoothFailed(dev.name)
+                            return@launch
+                        }
+                        Log.log("ComputerAudio: paired ${dev.name}, ensuring connection")
+                        var connectedOk = awaitConnected(dev.ip, 12)
+                        if (!connectedOk) {
+                            runCatching { Wiim.btConnectSource(dev.ip, pc) }
+                            connectedOk = awaitConnected(dev.ip, 20)
+                        }
+                        if (connectedOk) {
+                            connected = uuid
+                            Log.log("ComputerAudio: connected ${dev.name} after pairing")
+                        } else {
+                            Log.log("ComputerAudio: connect after pairing failed ${dev.name}")
+                            vm.message = BluetoothFailed(dev.name)
+                        }
                         return@launch
                     }
+                    Log.log("ComputerAudio: ${dev.name} already in pairing history, connecting")
                 } else if (!PcBluetooth.isPaired(info.btMac)) {
                     Wiim.btEnterPairing(dev.ip)
                     if (!PcBluetooth.pair(info.btMac)) {
+                        Log.log("ComputerAudio: Linux pairing failed ${dev.name}")
                         vm.message = BluetoothFailed(dev.name)
                         return@launch
                     }
@@ -105,8 +135,15 @@ class ComputerAudio(private val vm: WoomViewModel) {
                     Wiim.btConnectSource(dev.ip, pc)
                     ok = awaitConnected(dev.ip, 15)
                 }
-                if (ok) connected = uuid else vm.message = BluetoothFailed(dev.name)
+                if (ok) {
+                    connected = uuid
+                    Log.log("ComputerAudio: connected ${dev.name}")
+                } else {
+                    Log.log("ComputerAudio: connection failed ${dev.name}")
+                    vm.message = BluetoothFailed(dev.name)
+                }
             } catch (e: Exception) {
+                Log.error("ComputerAudio: error on ${dev.name}", e)
                 vm.message = Msg.Error(dev.name, e.message ?: e.toString())
             } finally {
                 vm.busy.remove(key)
@@ -148,6 +185,23 @@ class ComputerAudio(private val vm: WoomViewModel) {
         repeat(seconds * 2) {
             if (runCatching { Wiim.btStatus(ip).connected }.getOrDefault(false)) return true
             delay(500)
+        }
+        return false
+    }
+
+    /**
+     * Windows only: waits until the PC has been paired with the device — either the device already
+     * reports a connected Bluetooth source, or the PC's address appears in the device's pairing history.
+     * The device is re-armed for pairing every 20 s, since it leaves pairing mode on its own after a while.
+     */
+    private suspend fun awaitPaired(ip: String, pc: String, seconds: Int): Boolean {
+        var elapsed = 0
+        while (elapsed < seconds) {
+            if (runCatching { Wiim.btStatus(ip).connected }.getOrDefault(false)) return true
+            if (pc in runCatching { Wiim.btHistory(ip) }.getOrDefault(emptyList())) return true
+            if (elapsed > 0 && elapsed % 20 == 0) runCatching { Wiim.btEnterPairing(ip) }
+            delay(2000)
+            elapsed += 2
         }
         return false
     }

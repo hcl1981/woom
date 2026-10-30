@@ -58,6 +58,12 @@ compose.desktop {
                 shortcut = true
                 menuGroup = "AudioVideo"
             }
+            windows {
+                // Icon of Woom.exe in the app image built by `createReleaseDistributable`.
+                // The Windows installer itself is built from that app image by windows/woom.iss (Inno Setup).
+                iconFile.set(project.file("icons/woom.ico"))
+                console = false
+            }
         }
     }
 }
