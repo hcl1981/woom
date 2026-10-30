@@ -34,12 +34,12 @@ See [Releases](../../releases):
 |---|---|---|
 | Android 9+ | `Woom.apk` | Open the file on the phone and allow installing from this source. |
 | Linux (Debian, Ubuntu, Mint, …) | `Woom-linux.deb` | `sudo apt install ./Woom-linux.deb`, then start Woom from the menu. |
-| Windows 10/11 | `Woom-windows.zip` | Unzip anywhere (e.g. `%LOCALAPPDATA%\Woom`) and run `Woom.exe`. Java is included. |
+| Windows 10/11 | `WoomSetup.exe` | Run the installer – installs to `%LOCALAPPDATA%\Woom` (no admin rights), with an optional "start at login". Java is included. |
 
 Notes:
 - The tray icon on Linux uses StatusNotifier (Cinnamon, KDE, XFCE, MATE; GNOME needs the AppIndicator extension).
 - Windows SmartScreen warns on first start because the program is not signed.
-- The Windows version has so far only been tested under Wine.
+- The Windows build runs on Windows 10/11 (start, device discovery, settings and computer audio).
 
 ## Building
 
@@ -49,8 +49,9 @@ Notes:
 | PC, run | `desktop/` | `./gradlew run` |
 | Linux package | `desktop/` | `./gradlew packageReleaseDeb` |
 | Windows package (built on Linux) | `desktop/` | `WIN_JDK=<Windows JDK 21> ./build-windows.sh` – see `desktop/README.md` |
+| Windows installer (built on Windows) | `desktop/` | `powershell -File build-windows.ps1` – see `desktop/README.md` |
 
-Requirements: JDK 21, Android SDK (for the app), mingw-w64 and zip (for the Windows package).
+Requirements: JDK 21, Android SDK (for the app), mingw-w64 and zip (Windows package on Linux), Inno Setup (Windows installer on Windows).
 
 Code layout: protocol, data model and app logic live in `shared/src` and are used by both the Android app
 (Kotlin + Jetpack Compose) and the PC version (Compose Multiplatform). Developer notes in `android/README.md` and

@@ -26,8 +26,8 @@ Gespeichert wird in `~/.config/woom/woom.json` (Linux) bzw. `%APPDATA%\Woom\woom
 
 - **Linux (Debian/Ubuntu/Mint):** `sudo apt install ./Woom-linux.deb` – danach im Menü unter „Multimedia“ → Woom.
   Das Tray-Icon nutzt StatusNotifier (Cinnamon, KDE, XFCE, MATE; GNOME braucht die AppIndicator-Erweiterung).
-- **Windows 10/11:** `Woom-windows.zip` entpacken (z. B. nach `%LOCALAPPDATA%\Woom`) und `Woom.exe` starten.
-  Java ist enthalten, keine Installation nötig. Windows SmartScreen warnt beim ersten Start, weil das Programm nicht signiert ist.
+- **Windows 10/11:** `WoomSetup.exe` ausführen – installiert nach `%LOCALAPPDATA%\Woom` (ohne Admin-Rechte), mit Startmenü-Eintrag und optionalem Start bei der Anmeldung. Java ist enthalten.
+  Windows SmartScreen warnt beim ersten Start („Weitere Informationen“ → „Trotzdem ausführen“), weil das Programm nicht signiert ist.
 
 ## Geräte finden
 
@@ -41,6 +41,8 @@ Geräte in anderen Netzen lassen sich per IP-Adresse hinzufügen.
 - Linux-Paket: `./gradlew packageReleaseDeb` → `build/compose/binaries/main-release/deb/`
 - Windows-Paket (auf Linux): `WIN_JDK=<entpacktes Windows-JDK 21, gleiche Version wie das lokale> ./build-windows.sh`
   → `build/windows/Woom-windows.zip`. Braucht mingw-w64 (für `Woom.exe`) und zip.
+- Windows-Installer (auf Windows): `powershell -ExecutionPolicy Bypass -File build-windows.ps1`
+  → `build/dist/WoomSetup-<Datum>.exe`. Braucht JDK 21 und Inno Setup (ISCC).
 
 Technik: Kotlin + Compose Multiplatform 1.12, Tray über ComposeNativeTray, JNA für die Taskleisten-Ausnahme unter X11.
 Protokoll und Steuerlogik kommen aus `../shared/src` (gemeinsam mit der Android-App).
