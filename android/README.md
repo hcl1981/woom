@@ -1,50 +1,50 @@
-# Woom – einfache Android-App für WiiM-Geräte
+# Woom – a simple Android app for WiiM devices
 
-Fertige App: `../Woom.apk` (Android 9 oder neuer). Bauen: `./gradlew assembleRelease`, Tests: `./gradlew testDebugUnitTest`.
+Prebuilt app: `../Woom.apk` (Android 9 or newer). Build: `./gradlew assembleRelease`, tests: `./gradlew testDebugUnitTest`.
 
-## Bedienung
+## Usage
 
-- **Zahnrad oben rechts:** Geräte hinzufügen (werden im WLAN automatisch gefunden, sonst per IP), entfernen, sortieren, Kürzel (2 Zeichen) ändern, Eingänge ein-/ausblenden.
-- **Sender-Balken:** bis zu 5 Geräte-Buttons. Gedrückt halten und schieben sortiert die Senderliste.
-  - Tippen auf ein Gerät → spielt den Sender.
-  - Läuft der Sender schon auf einem anderen Gerät → das getippte Gerät spielt **synchron** mit (Multiroom-Gruppe).
-  - Tippen auf ein Gerät, das den Sender gerade spielt (gefüllter Button) → nur dieses Gerät verstummt.
-    Ist es der Gruppen-Leiter, übernimmt ein Mitspieler den Sender (kurze Pause ~1 s), die übrigen hängen sich an ihn.
-    Leiter/Mitspieler wird dafür direkt beim Gerät abgefragt, nicht aus dem letzten Abfrage-Stand.
-- **Regler-Symbol im Balken:** Name, Stream-URL, Bild-URL, welche Geräte-Buttons erscheinen, Sender als **Favorit (Preset)** auf ein oder mehrere Geräte übertragen, Reihenfolge, löschen.
-- **Sender hinzufügen:** Button unter den Sendern. Oben Suche im freien Senderverzeichnis radio-browser.info
-  (füllt Name, Stream-URL und Logo aus); fehlende Logos werden einmal pro Start per Stream-URL nachgeschlagen.
-- **Lautstärke & Eingänge** (antippen zum Auf-/Zuklappen, beim Start zu): pro Gerät Stummschalten (`setPlayerCmd:mute:0|1`), Lautstärkeregler, Eingänge zum Umschalten
-  und ein Einstellungs-Symbol (Name, Kürzel, angezeigte Eingänge – nur in Woom, nicht auf dem Gerät).
-- Zu lange Namen laufen als Lauftext durch.
+- **Gear icon, top right:** add devices (found automatically on the Wi-Fi, otherwise by IP), remove, reorder, change the abbreviation (2 characters), show/hide inputs.
+- **Station bar:** up to 5 device buttons. Press and hold, then drag to reorder the station list.
+  - Tap a device → plays the station.
+  - If the station is already playing on another device → the tapped device plays **in sync** (multiroom group).
+  - Tap a device that is currently playing the station (filled button) → only that device goes silent.
+    If it is the group leader, another member takes over the station (short pause ~1 s) and the rest join it.
+    Leader/member is queried directly from the device for this, not taken from the last polled state.
+- **Slider icon in the bar:** name, stream URL, image URL, which device buttons appear, transfer the station as a **favourite (preset)** to one or more devices, order, delete.
+- **Add station:** button below the stations. At the top, a search in the free station directory radio-browser.info
+  (fills in name, stream URL and logo); missing logos are looked up once per start via the stream URL.
+- **Volume & inputs** (tap to expand/collapse, collapsed at start): per device mute (`setPlayerCmd:mute:0|1`), volume slider, inputs to switch between,
+  and a settings icon (name, abbreviation, shown inputs – only in Woom, not on the device).
+- Names that are too long scroll as marquee text.
 
-## Sprachen
+## Languages
 
-Systemsprache automatisch (ab Android 13 auch pro App wählbar): Englisch (Standard), Deutsch, Französisch, Spanisch,
-Italienisch, Niederländisch, Polnisch, Portugiesisch, Japanisch, Chinesisch (vereinfacht). Texte in `res/values*/strings.xml`.
+System language automatically (from Android 13 also selectable per app): English (default), German, French, Spanish,
+Italian, Dutch, Polish, Portuguese, Japanese, Chinese (simplified). Texts in `res/values*/strings.xml`.
 
-## Technik
+## Tech
 
-Kotlin + Jetpack Compose. Gespeichert wird lokal in `woom.json` im App-Speicher.
-Protokoll, Datenmodell und Steuerlogik (`WoomViewModel`) liegen in `../shared/src` und werden auch von der PC-Version (`../desktop`) benutzt.
-Protokoll: siehe `../docs/`. Abspielen per PlayQueue `CreateQueue` (mit Name/Logo), Rückfall `setPlayerCmd:play:<url>`;
-Gruppe `multiroom:JoinGroup` / `LeaveGroup` / `Ungroup`; Eingänge `setPlayerCmd:switchmode:<name>`;
-Presets per `GetKeyMapping`/`SetKeyMapping` (nur der gewählte Platz wird ersetzt). Status-Abfrage alle 3 s, solange die App sichtbar ist.
+Kotlin + Jetpack Compose. Data is stored locally in `woom.json` in the app storage.
+Protocol, data model and control logic (`WoomViewModel`) live in `../shared/src` and are also used by the PC version (`../desktop`).
+Protocol: see `../docs/`. Playback via PlayQueue `CreateQueue` (with name/logo), fallback `setPlayerCmd:play:<url>`;
+group `multiroom:JoinGroup` / `LeaveGroup` / `Ungroup`; inputs `setPlayerCmd:switchmode:<name>`;
+presets via `GetKeyMapping`/`SetKeyMapping` (only the chosen slot is replaced). Status polled every 3 s while the app is visible.
 
-## Teststand am Gerät (Stand 2026-10-29)
+## Device test status (as of 2026-10-29)
 
-Verifiziert: Gerätesuche, Status, `setPlayerCmd:play`/`stop`, Presets lesen und **schreiben**
-(`LiveDeviceTest`, schreibt auf einen leeren Platz und stellt die Liste danach wieder her),
-Eingangsliste per `getAudioInputCapbility` (Ultra: inkl. `udisk`; Sound: `auxIn`; Mini kennt den Befehl nicht → Rückfall auf `plm_support`).
+Verified: device discovery, status, `setPlayerCmd:play`/`stop`, reading and **writing** presets
+(`LiveDeviceTest`, writes to an empty slot and restores the list afterwards),
+input list via `getAudioInputCapbility` (Ultra: incl. `udisk`; Sound: `auxIn`; Mini does not know the command → fallback to `plm_support`).
 
-Ebenfalls verifiziert (Ultra, Lautstärke 10): Abspielen per `CreateQueue` (Gerät zeigt Name + Logo,
-`vendor: CustomRadio`, startet nach ~1 s), Eingang umschalten (`switchmode:line-in` → `mode 40`, wird in der App markiert), Stop.
+Also verified (Ultra, volume 10): playback via `CreateQueue` (device shows name + logo,
+`vendor: CustomRadio`, starts after ~1 s), switching input (`switchmode:line-in` → `mode 40`, marked in the app), stop.
 
-Gruppieren verifiziert (Ultra + Sound): `JoinGroup` → Follower `group=1`, `master_uuid` = Leiter, `getSlaveList` listet ihn;
-`LeaveGroup` und `Ungroup` → `group=0`. Der Follower meldet in `getPlayerStatus` immer `status:"stop", mode:99` – auch während er
-mitspielt; die App leitet seinen Zustand deshalb vom Leiter ab.
-Laufender Sender wird über AVTransport `TrackURI` erkannt (bleibt die Stream-URL, während der Titel durch Sendungsinfos ersetzt wird;
-im Stopp steht dort nur `SONGLIST-NETWORK`).
+Grouping verified (Ultra + Sound): `JoinGroup` → follower `group=1`, `master_uuid` = leader, `getSlaveList` lists it;
+`LeaveGroup` and `Ungroup` → `group=0`. The follower always reports `status:"stop", mode:99` in `getPlayerStatus` – even while it
+is playing along; the app therefore derives its state from the leader.
+A playing station is detected via AVTransport `TrackURI` (stays the stream URL while the title is replaced by programme info;
+when stopped it only shows `SONGLIST-NETWORK`).
 
-Live-Tests: `WOOM_LIVE_IP=<ip> WOOM_LIVE_SLOT=<leerer Platz> ./gradlew testDebugUnitTest --tests '*LiveDeviceTest*'`
-(hörbarer Teil zusätzlich mit `WOOM_LIVE_AUDIBLE=1 WOOM_LIVE_VOLUME=10`).
+Live tests: `WOOM_LIVE_IP=<ip> WOOM_LIVE_SLOT=<empty slot> ./gradlew testDebugUnitTest --tests '*LiveDeviceTest*'`
+(audible part additionally with `WOOM_LIVE_AUDIBLE=1 WOOM_LIVE_VOLUME=10`).

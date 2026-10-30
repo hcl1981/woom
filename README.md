@@ -54,8 +54,8 @@ Notes:
 Requirements: JDK 21, Android SDK (for the app), mingw-w64 and zip (Windows package on Linux), Inno Setup (Windows installer on Windows).
 
 Code layout: protocol, data model and app logic live in `shared/src` and are used by both the Android app
-(Kotlin + Jetpack Compose) and the PC version (Compose Multiplatform). Developer notes in `android/README.md` and
-`desktop/README.md` are in German.
+(Kotlin + Jetpack Compose) and the PC version (Compose Multiplatform). Developer notes are in `android/README.md` and
+`desktop/README.md`.
 
 ## Protocol documentation
 

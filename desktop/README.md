@@ -1,56 +1,57 @@
-# Woom für PC (Linux und Windows)
+# Woom for PC (Linux and Windows)
 
-Dieselbe Fernbedienung wie die Android-App, als kleines Fenster am Tray-Icon (Infobereich der Taskleiste).
+The same remote as the Android app, as a small window at the tray icon (notification area of the taskbar).
 
-## Bedienung
+## Usage
 
-- **Klick auf das Tray-Icon** öffnet das Fenster neben dem Icon, ein weiterer Klick oder ein Klick daneben schließt es.
-  Esc geht eine Ebene zurück bzw. schließt das Fenster. Das Fenster erscheint nicht als eigenes Programm in der Taskleiste.
-- **Rechtsklick auf das Icon:** „Woom öffnen“ und „Beenden“.
-- **Computer** (erste Leiste): spielt den Ton des PCs über Bluetooth auf einem WiiM – geringe Verzögerung, Video-Player
-  gleichen sie automatisch aus (Filme bleiben lippensynchron). Klick auf ein Gerät: der WiiM schaltet auf seinen
-  Bluetooth-Eingang und verbindet sich mit dem PC, das System leitet den Ton um (Linux ca. 2,5–5 s).
-  Nochmal klicken trennt. Wechselt der WiiM auf eine andere Quelle (Sender, Fernbedienung, WiiM-App), trennt Woom die
-  Verbindung, damit der PC wieder über die eigenen Lautsprecher spielt.
-  Erstes Mal: unter Linux koppelt Woom selbst (bluetoothctl); unter Windows öffnet Woom die Bluetooth-Einstellungen,
-  dort einmal den WiiM hinzufügen – danach verbindet sich der WiiM selbst mit dem PC.
-- Sender, Geräte-Knöpfe, Lautstärke, Stummschalten, Eingänge, Presets und Sendersuche wie in der App.
-  Sender lassen sich mit der Maus an eine andere Stelle ziehen.
-- **Einstellungen:** Geräte suchen/hinzufügen und „Woom bei der Anmeldung starten“ (startet dann nur im Tray).
-- Ein zweiter Start von Woom öffnet einfach das Fenster des bereits laufenden Woom.
+- **Click the tray icon** to open the window next to the icon; another click, or a click elsewhere, closes it.
+  Esc goes back one level or closes the window. The window does not appear as a separate program in the taskbar.
+- **Right-click the icon:** "Open Woom" and "Quit".
+- **Computer** (first bar): plays the PC's sound on a WiiM over Bluetooth – low latency, video players
+  compensate for it automatically (films stay in sync). Click a device: the WiiM switches to its
+  Bluetooth input and connects to the PC, and the system reroutes the sound (Linux about 2.5–5 s).
+  Click again to disconnect. If the WiiM switches to another source (station, remote, WiiM app), Woom
+  disconnects so the PC plays through its own speakers again.
+  First time: on Linux Woom pairs itself (bluetoothctl); on Windows Woom opens the Bluetooth settings,
+  where you add the WiiM once – after that the WiiM connects to the PC by itself.
+- Stations, device buttons, volume, mute, inputs, presets and station search as in the app.
+  Stations can be dragged to another position with the mouse.
+- **Settings:** find/add devices and "Start Woom at login" (then starts in the tray only).
+- Starting Woom a second time simply opens the window of the already running Woom.
 
-Die Senderliste ist unabhängig von der Android-App (kein Abgleich).
-Gespeichert wird in `~/.config/woom/woom.json` (Linux) bzw. `%APPDATA%\Woom\woom.json` (Windows).
+The station list is independent of the Android app (no sync).
+Data is stored in `~/.config/woom/woom.json` (Linux) or `%APPDATA%\Woom\woom.json` (Windows).
 
 ## Installation
 
-- **Linux (Debian/Ubuntu/Mint):** `sudo apt install ./Woom-linux.deb` – danach im Menü unter „Multimedia“ → Woom.
-  Das Tray-Icon nutzt StatusNotifier (Cinnamon, KDE, XFCE, MATE; GNOME braucht die AppIndicator-Erweiterung).
-- **Windows 10/11:** `WoomSetup.exe` ausführen – installiert nach `%LOCALAPPDATA%\Woom` (ohne Admin-Rechte), mit Startmenü-Eintrag und optionalem Start bei der Anmeldung. Java ist enthalten.
-  Windows SmartScreen warnt beim ersten Start („Weitere Informationen“ → „Trotzdem ausführen“), weil das Programm nicht signiert ist.
+- **Linux (Debian/Ubuntu/Mint):** `sudo apt install ./Woom-linux.deb` – then find Woom in the menu under "Multimedia".
+  The tray icon uses StatusNotifier (Cinnamon, KDE, XFCE, MATE; GNOME needs the AppIndicator extension).
+- **Windows 10/11:** run `WoomSetup.exe` – installs to `%LOCALAPPDATA%\Woom` (no admin rights), with a Start-menu
+  entry and an optional start at login. Java is included.
+  Windows SmartScreen warns on first start ("More info" → "Run anyway") because the program is not signed.
 
-## Geräte finden
+## Finding devices
 
-Statt mDNS probiert Woom auf dem PC den HTTPS-Port aller Adressen im eigenen /24-Netz und fragt offene Adressen nach
-`getStatusEx`. Das braucht keine eingehenden Pakete, eine Firewall auf dem PC stört also nicht.
-Geräte in anderen Netzen lassen sich per IP-Adresse hinzufügen.
+Instead of mDNS, on the PC Woom probes the HTTPS port of every address in its own /24 network and asks open
+addresses for `getStatusEx`. This needs no incoming packets, so a firewall on the PC does not get in the way.
+Devices in other networks can be added by IP address.
 
-## Bauen
+## Building
 
-- Starten zum Ausprobieren: `./gradlew run`
-- Linux-Paket: `./gradlew packageReleaseDeb` → `build/compose/binaries/main-release/deb/`
-- Windows-Paket (auf Linux): `WIN_JDK=<entpacktes Windows-JDK 21, gleiche Version wie das lokale> ./build-windows.sh`
-  → `build/windows/Woom-windows.zip`. Braucht mingw-w64 (für `Woom.exe`) und zip.
-- Windows-Installer (auf Windows): `powershell -ExecutionPolicy Bypass -File build-windows.ps1`
-  → `build/dist/WoomSetup-<Datum>.exe`. Braucht JDK 21 und Inno Setup (ISCC).
+- Run to try it out: `./gradlew run`
+- Linux package: `./gradlew packageReleaseDeb` → `build/compose/binaries/main-release/deb/`
+- Windows package (on Linux): `WIN_JDK=<unpacked Windows JDK 21, same version as the local one> ./build-windows.sh`
+  → `build/windows/Woom-windows.zip`. Needs mingw-w64 (for `Woom.exe`) and zip.
+- Windows installer (on Windows): `powershell -ExecutionPolicy Bypass -File build-windows.ps1`
+  → `build/dist/WoomSetup-<date>.exe`. Needs JDK 21 and Inno Setup (ISCC).
 
-Technik: Kotlin + Compose Multiplatform 1.12, Tray über ComposeNativeTray, JNA für die Taskleisten-Ausnahme unter X11.
-Protokoll und Steuerlogik kommen aus `../shared/src` (gemeinsam mit der Android-App).
+Tech: Kotlin + Compose Multiplatform 1.12, tray via ComposeNativeTray, JNA for the taskbar exception under X11.
+Protocol and control logic come from `../shared/src` (shared with the Android app).
 
-## Teststand (2026-10-29)
+## Test status (2026-10-30)
 
-- Linux (Cinnamon/X11): Tray-Icon, Fenster am Icon, kein Taskleisten-Eintrag, Sender abspielen, Logos – vom Nutzer bzw. lokal geprüft.
-- Computer-Ton (Linux, Ultra): Koppeln, Verbinden, Trennen, automatisches Trennen beim Quellenwechsel geprüft
-  (Entwicklerversion). Hörtest/Lippensynchronität durch den Nutzer steht aus.
-- Windows: nur unter Wine geprüft (Start, Oberfläche, Gerätesuche findet alle drei Geräte, Autostart-Eintrag in der Registry).
-  Tray-Icon, Fensterposition und Computer-Ton (Bluetooth) auf echtem Windows noch ungetestet.
+- Linux (Cinnamon/X11): tray icon, window at the icon, no taskbar entry, playing stations, logos – checked by the user / locally.
+- Computer audio (Linux, Ultra): pairing, connecting, disconnecting and automatic disconnect on source change checked
+  (developer build). Listening test / lip sync by the user still pending.
+- Windows 10/11: start, device discovery, settings persistence, first-time Bluetooth pairing for computer audio, and the
+  autostart installer checked by the user. (Earlier versions had only been tested under Wine.)
