@@ -44,6 +44,9 @@ Devices in other networks can be added by IP address.
   → `build/windows/Woom-windows.zip`. Needs mingw-w64 (for `Woom.exe`) and zip.
 - Windows installer (on Windows): `powershell -ExecutionPolicy Bypass -File build-windows.ps1`
   → `build/dist/WoomSetup-<date>.exe`. Needs JDK 21 and Inno Setup (ISCC).
+- Windows installer (on Linux): after `build-windows.sh`, run Inno Setup 6 under Wine:
+  `wine ISCC.exe /DAppDir=<build/windows/Woom as Z:\ path> /O<output folder> /FWoomSetup windows\woom.iss`.
+  Uses the mingw launcher instead of the jpackage one. The version in `windows/woom.iss` is set by hand.
 
 Tech: Kotlin + Compose Multiplatform 1.12, tray via ComposeNativeTray, JNA for the taskbar exception under X11.
 Protocol and control logic come from `../shared/src` (shared with the Android app).

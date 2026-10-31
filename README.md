@@ -50,6 +50,7 @@ Notes:
 | Linux package | `desktop/` | `./gradlew packageReleaseDeb` |
 | Windows package (built on Linux) | `desktop/` | `WIN_JDK=<Windows JDK 21> ./build-windows.sh` – see `desktop/README.md` |
 | Windows installer (built on Windows) | `desktop/` | `powershell -File build-windows.ps1` – see `desktop/README.md` |
+| Windows installer (built on Linux) | `desktop/` | Inno Setup under Wine – see `desktop/README.md` |
 
 Requirements: JDK 21, Android SDK (for the app), mingw-w64 and zip (Windows package on Linux), Inno Setup (Windows installer on Windows).
 

@@ -7,7 +7,7 @@
 ; (build-windows.ps1 does this for you.)
 
 #define MyName "Woom"
-#define MyVersion "1.0.3"
+#define MyVersion "1.0.8"
 #define MyPublisher "Woom"
 #define MyExe "Woom.exe"
 
